@@ -22,11 +22,16 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html'
+      template: './index.html',
+      //filename: 'index.html',
     }),
   ],
   devServer: {
