@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import Header from './components/header'
-import Navigation from './components/navigation';
-import ProductSection from './components/product_section';
-import Footer from './components/footer';
-import './styles.css'
+import Header from '../components/Header'
+import Navigation from '../components/Navigation';
+import ProductSection from '../components/ProductSection';
+import Footer from '../components/Footer';
+import '../styles.css'
 function HomePage() {
   const navigate = useNavigate();
   return (
