@@ -39,19 +39,19 @@ function RegisterSection() {
           <div className="col-lg-6">
             <div className="mb-3">
               <label htmlFor="username" className="form-label">Username</label>
-              <input 
-              type="text" 
-              className="form-control" 
-              id="username" 
-              value={username} onChange={(e) => setUsername(e.target.value)}/>
+              <input
+                type="text"
+                className="form-control"
+                id="username"
+                value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password</label>
-              <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+              <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div className="mb-3">
               <label htmlFor="cardNumber" className="form-label">Card Number</label>
-              <input type="text" className="form-control" id="cardNumber" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)}/>
+              <input type="text" className="form-control" id="cardNumber" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
             </div>
             <button className="btn btn-primary me-2" onClick={handleRegister}>Register</button>
           </div>
