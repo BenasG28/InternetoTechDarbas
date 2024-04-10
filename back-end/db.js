@@ -93,13 +93,13 @@ db.run(`CREATE TABLE IF NOT EXISTS products (
         console.log('Products table already exists or was created successfully.');
     }
 });
-db.run(`DELETE FROM products`, (err) => {
-    if (err) {
-      console.error('Error deleting data from products table:', err.message);
-    } else {
-      console.log('All data deleted from the products table successfully.');
-    }
-  });
+// db.run(`DELETE FROM products`, (err) => {
+//     if (err) {
+//       console.error('Error deleting data from products table:', err.message);
+//     } else {
+//       console.log('All data deleted from the products table successfully.');
+//     }
+//   });
   
 db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
