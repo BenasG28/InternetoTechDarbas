@@ -1,15 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
 function RegisterSection() {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
 
-  const handleRegister = () => {
-    // Handle registration logic here
-    console.log('Register button clicked');
-    // After registration, navigate back to the login page
-    navigate('/login');
+
+  const handleRegister = async () => {
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          cardNumber
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+      console.log('Registration successful');
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
   };
 
   return (
@@ -19,15 +39,19 @@ function RegisterSection() {
           <div className="col-lg-6">
             <div className="mb-3">
               <label htmlFor="username" className="form-label">Username</label>
-              <input type="text" className="form-control" id="username" />
+              <input 
+              type="text" 
+              className="form-control" 
+              id="username" 
+              value={username} onChange={(e) => setUsername(e.target.value)}/>
             </div>
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password</label>
-              <input type="password" className="form-control" id="password" />
+              <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
             </div>
             <div className="mb-3">
               <label htmlFor="cardNumber" className="form-label">Card Number</label>
-              <input type="text" className="form-control" id="cardNumber" />
+              <input type="text" className="form-control" id="cardNumber" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)}/>
             </div>
             <button className="btn btn-primary me-2" onClick={handleRegister}>Register</button>
           </div>
