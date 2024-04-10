@@ -25,9 +25,8 @@ function App() {
         <Navigation isLoggedIn={isLoggedIn} onLogout={handleLogout} />
         <Header />
         <Routes>
-          <Route path="/" element={<Navigate replace to="/home" />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/itempage" element={<ItemPage />} />
+          <Route path="/itempage/:id" element={<ItemPage/>}/>
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/register" element={<RegisterPage />} />
