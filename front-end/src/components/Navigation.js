@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Navigation({ isLoggedIn }) {
+function Navigation({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
 
   const handleLoginClick = () => {
@@ -15,9 +15,28 @@ function Navigation({ isLoggedIn }) {
   const handleAboutClick = () => {
     navigate('/about');
   };
-  const handleLogoutClick = () => {
-    // Call the logout function passed down from the parent component
-    // onLogout();
+  const handleLogout = () => {
+    fetch('/api/logout', {
+      method: 'POST',
+    })
+    .then(response => {
+      if (!response.ok) {
+        // Logout failed, handle error
+        return response.json().then(data => {
+          console.error('Logout failed:', data.message);
+          // You can show an error message to the user here
+        });
+      }
+  
+      // Logout successful
+      console.log('Logout Successful');
+      onLogout(); // Update the isLoggedIn state in App.js
+      navigate('/home');
+    })
+    .catch(error => {
+      console.error('Error logging out:', error.message);
+      // Handle network or other errors here
+    });
   };
 
   const handleProfileClick = () => {
@@ -45,7 +64,6 @@ function Navigation({ isLoggedIn }) {
               </ul>
             </li>
           </ul>
-          <form className="d-flex">
             <button className="btn btn-outline-dark" type="submit">
               <i className="bi-cart-fill me-1"></i>
               Cart
@@ -56,7 +74,7 @@ function Navigation({ isLoggedIn }) {
                 <button className="btn btn-outline-dark mx-2" onClick={handleProfileClick}>
                   Profile
                 </button>
-                <button className="btn btn-outline-dark" onClick={handleLogoutClick}>
+                <button className="btn btn-outline-dark" onClick={handleLogout}>
                   Logout
                 </button>
               </>
@@ -66,7 +84,6 @@ function Navigation({ isLoggedIn }) {
                 Login
               </button>
             )}
-          </form>
         </div>
       </div>
     </nav>
