@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-function LoginSection() {
+function LoginSection({onLogin}) {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +19,7 @@ function LoginSection() {
       if (response.ok) {
         // Login successful, redirect to another page
         console.log('Login Successful');
+        onLogin();
         navigate('/home');
       } else {
         // Login failed, handle error

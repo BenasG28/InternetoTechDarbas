@@ -10,10 +10,7 @@ function AboutPage() {
   const navigate = useNavigate();
   return (
    <div>
-    <Navigation/>
-    <Header/>
     <AboutSection/>
-    <Footer/>
    </div>
   );
 }
