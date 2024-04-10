@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage';
 import Navigation from './components/Navigation';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,6 +31,7 @@ function App() {
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/profile" element={<ProfilePage/>}/>
         </Routes>
         <Footer />
       </BrowserRouter>
