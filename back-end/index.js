@@ -30,6 +30,33 @@ const registrationValidationSchema = yup.object().shape({
       // You may add more specific rules for card numbers based on your requirements
   });
   
+  app.get('/products', (req, res) => {
+    db.getAllProducts((err, products) => {
+      if (err) {
+        console.error('Error fetching products:', err);
+        return res.status(500).send('Error retrieving products'); // Handle error
+      }
+  
+      res.json(products); // Send the array of products as JSON response
+    });
+  });
+
+  app.get('/products/:id', (req, res) => { // Corrected the route to include :id as a parameter
+    const productId = req.params.id; // Extract the productId from the request params
+  
+    db.getProductById(productId, (err, product) => { // Call getProductById with the extracted productId
+      if (err) {
+        console.error('Error fetching product:', err);
+        return res.status(500).send('Error retrieving product'); // Handle error
+      }
+  
+      if (!product) {
+        return res.status(404).send('Product not found'); // Return 404 if product with the specified ID is not found
+      }
+  
+      res.json(product); // Send the product as JSON response
+    });
+  });
 
   app.post("/register", (req, res) => {
     const { username, password, cardNumber } = req.body;
