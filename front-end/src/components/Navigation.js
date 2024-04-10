@@ -42,6 +42,7 @@ function Navigation({ isLoggedIn, onLogout }) {
   const handleProfileClick = () => {
     // Navigate to the profile page
     // navigate('/profile');
+    navigate('/profile');
   };
 
   return (
