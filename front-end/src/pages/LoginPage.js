@@ -5,14 +5,11 @@ import Navigation from '../components/Navigation';
 import LoginSection from '../components/LoginSection';
 import Footer from '../components/Footer';
 import '../styles.css'
-function LoginPage() {
+function LoginPage({onLogin}) {
   const navigate = useNavigate();
   return (
    <div>  
-    <Navigation/>
-    <Header/>
-    <LoginSection/>
-    <Footer/>
+    <LoginSection onLogin={onLogin}/>
    </div>
   );
 }

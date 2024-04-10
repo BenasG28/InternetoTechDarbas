@@ -1,19 +1,30 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Navigation() {
+function Navigation({ isLoggedIn }) {
   const navigate = useNavigate();
 
-  const handleLoginClick =() =>{
+  const handleLoginClick = () => {
     navigate('/login');
   };
-  const handleHomeClick =() =>{
-    navigate('/home')
+
+  const handleHomeClick = () => {
+    navigate('/home');
   };
-  const handleAboutClick =()=>{
-    navigate('/about')
+
+  const handleAboutClick = () => {
+    navigate('/about');
   };
-  
+  const handleLogoutClick = () => {
+    // Call the logout function passed down from the parent component
+    // onLogout();
+  };
+
+  const handleProfileClick = () => {
+    // Navigate to the profile page
+    // navigate('/profile');
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container px-4 px-lg-5">
@@ -28,23 +39,33 @@ function Navigation() {
             <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><span className="dropdown-item disabled">All Products (Not Available)</span></li>                
-              <li><hr className="dropdown-divider" /></li>
+                <li><span className="dropdown-item disabled">All Products (Not Available)</span></li>
                 <li><span className="dropdown-item disabled">Popular Items (Not Available)</span></li>
                 <li><span className="dropdown-item disabled">New Arrivals (Not Available)</span></li>
               </ul>
             </li>
           </ul>
           <form className="d-flex">
-            <button className="btn btn-outline-dark me-2" onClick={handleLoginClick}>
-              <i className="bi bi-person-fill me-1"></i>
-              Login
-            </button>
             <button className="btn btn-outline-dark" type="submit">
               <i className="bi-cart-fill me-1"></i>
               Cart
               <span className="badge bg-dark text-white ms-1 rounded-pill">0</span>
             </button>
+            {isLoggedIn ? (
+              <>
+                <button className="btn btn-outline-dark mx-2" onClick={handleProfileClick}>
+                  Profile
+                </button>
+                <button className="btn btn-outline-dark" onClick={handleLogoutClick}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button className="btn btn-outline-dark mx-2" onClick={handleLoginClick}>
+                <i className="bi bi-person-fill me-1"></i>
+                Login
+              </button>
+            )}
           </form>
         </div>
       </div>
