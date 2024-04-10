@@ -137,7 +137,43 @@ module.exports.createUserWithToken = (username, password, cardNumber, token, cal
             callback(null, row);
         }
     });
-}; 
+};
+module.exports.findUserByToken = (token, callback) => {
+    const sql = `SELECT * FROM users WHERE token = ?`;
+    db.get(sql, [token], (err, row) => {
+        if (err) {
+            callback(err);
+        } else {
+            // If a user with the given token exists, return the user data
+            // Otherwise, return null to indicate that the user does not exist
+            callback(null, row);
+        }
+    });
+};
+module.exports.updateUserToken = (userId, newToken, callback) => {
+    const sql = 'UPDATE users SET token = ? WHERE id = ?';
+    db.run(sql, [newToken, userId], (err) => {
+        if (err) {
+            // If an error occurs during the database operation, pass the error to the callback
+            callback(err);
+        } else {
+            // If the update is successful, call the callback without any error
+            callback(null);
+        }
+    });
+};
+module.exports.updateUserInfo = (username, newCardNumber, callback) => {
+    const sql = `UPDATE users SET cardNumber = ? WHERE username = ?`;
+    db.run(sql, [newCardNumber, username], (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null);
+        }
+    });
+};
+
+
 
 // Close the database connection
 module.exports.closeDatabase = () => {

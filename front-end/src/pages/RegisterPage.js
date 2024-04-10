@@ -9,10 +9,7 @@ function RegisterPage() {
   const navigate = useNavigate();
   return (
    <div>  
-    <Navigation/>
-    <Header/>
     <RegisterSection/>
-    <Footer/>
    </div>
   );
 }

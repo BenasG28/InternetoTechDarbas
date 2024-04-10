@@ -1,13 +1,40 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-function LoginSection() {
-    const navigate = useNavigate();
+function LoginSection({onLogin}) {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Handle login logic here
-    console.log('Login button clicked');
+    fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        // Login failed, handle error
+        return response.json().then(data => {
+          console.error('Login failed:', data.message);
+          // You can show an error message to the user here
+        });
+      }
+  
+      // Login successful
+      console.log('Login Successful');
+      onLogin();
+      navigate('/home');
+    })
+    .catch(error => {
+      console.error('Error logging in:', error.message);
+      // Handle network or other errors here
+    });
   };
+  
   const handleRegister = () => {
     navigate('/register')
   };
@@ -19,11 +46,23 @@ function LoginSection() {
           <div className="col-lg-6">
             <div className="mb-3">
               <label htmlFor="username" className="form-label">Username</label>
-              <input type="text" className="form-control" id="username" />
+              <input
+                type="text"
+                className="form-control"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password</label>
-              <input type="password" className="form-control" id="password" />
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <p className="mb-3">If you are not registered, <span className="text-primary" onClick={handleRegister} style={{ cursor: 'pointer' }}>click here</span> to register.</p>
 
