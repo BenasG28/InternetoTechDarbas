@@ -14,11 +14,14 @@ function App() {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   return (
     <React.StrictMode>
       <BrowserRouter>
-        <Navigation isLoggedIn={isLoggedIn} />
+        <Navigation isLoggedIn={isLoggedIn} onLogout={handleLogout} />
         <Header />
         <Routes>
           <Route path="/" element={<Navigate replace to="/home" />} />

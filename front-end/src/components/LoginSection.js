@@ -7,31 +7,34 @@ function LoginSection({onLogin}) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-      if (response.ok) {
-        // Login successful, redirect to another page
-        console.log('Login Successful');
-        onLogin();
-        navigate('/home');
-      } else {
+  const handleLogin = () => {
+    fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
         // Login failed, handle error
-        const data = await response.json();
-        console.error('Login failed:', data.message);
-        // You can show an error message to the user here
+        return response.json().then(data => {
+          console.error('Login failed:', data.message);
+          // You can show an error message to the user here
+        });
       }
-    } catch (error) {
+  
+      // Login successful
+      console.log('Login Successful');
+      onLogin();
+      navigate('/home');
+    })
+    .catch(error => {
       console.error('Error logging in:', error.message);
       // Handle network or other errors here
-    }
+    });
   };
+  
   const handleRegister = () => {
     navigate('/register')
   };
