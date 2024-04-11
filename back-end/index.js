@@ -32,15 +32,24 @@ const registrationValidationSchema = yup.object().shape({
   });
   
   app.get('/products', (req, res) => {
+    const { sort } = req.query;
     db.getAllProducts((err, products) => {
-      if (err) {
-        console.error('Error fetching products:', err);
-        return res.status(500).send('Error retrieving products'); // Handle error
-      }
-  
-      res.json(products); // Send the array of products as JSON response
+        if (err) {
+            console.error('Error fetching products:', err);
+            return res.status(500).send('Error retrieving products'); // Handle error
+        }
+
+        if (sort === 'price') {
+            products.sort((a, b) => a.price - b.price);
+        } else if (sort === 'name') {
+            products.sort((a, b) => a.name.localeCompare(b.name));
+        } 
+
+        // Add more sorting criteria as needed
+
+        res.json(products); // Send the array of sorted products as JSON response
     });
-  });
+});
 
   app.get('/products/:id', (req, res) => { // Corrected the route to include :id as a parameter
     const productId = req.params.id; // Extract the productId from the request params
