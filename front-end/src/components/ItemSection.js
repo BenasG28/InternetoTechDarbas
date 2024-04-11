@@ -6,18 +6,22 @@ const ItemSection = () => {
   const [product, setProduct] = useState(null);
 
   // Define the fetchProduct function to fetch a single product by id
-  const fetchProduct = async (productId) => {
-    try {
-      const response = await fetch(`/api/products/${productId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch product');
-      }
-      const productData = await response.json();
-      setProduct(productData);
-    } catch (error) {
-      console.error('Error fetching product:', error);
-    }
+  const fetchProduct = (productId) => {
+    fetch(`/api/products/${productId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch product');
+        }
+        return response.json();
+      })
+      .then(productData => {
+        setProduct(productData);
+      })
+      .catch(error => {
+        console.error('Error fetching product:', error);
+      });
   };
+  
 
   useEffect(() => {
     // Call fetchProduct with the id parameter
