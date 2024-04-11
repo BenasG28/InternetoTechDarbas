@@ -11,7 +11,7 @@ const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClic
       <div className="card-body p-4">
         <div className="text-center">
           <h5 className="fw-bolder">{productName}</h5>
-          {price}
+          €{price}
           {/* Render star reviews if available */}
           {starReviews && (
             <div className="d-flex justify-content-center small text-warning mb-2">

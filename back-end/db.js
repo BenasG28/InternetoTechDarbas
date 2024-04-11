@@ -18,7 +18,9 @@ db.run(`CREATE TABLE IF NOT EXISTS products (
     name TEXT,
     price REAL,
     description TEXT,
-    image TEXT
+    image TEXT,
+    stars TEXT,
+    onsale BOOLEAN DEFAULT 0
 )`, (err) => {
     if (err) {
         console.error('Error creating products table:', err.message);
