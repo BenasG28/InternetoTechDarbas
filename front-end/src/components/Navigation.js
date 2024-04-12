@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 function Navigation({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
@@ -88,26 +87,28 @@ function Navigation({ isLoggedIn, onLogout }) {
               </ul>
             </li>
           </ul>
-            <button className="btn btn-outline-dark" type="submit">
+          {isLoggedIn && (
+            <button className="btn btn-outline-dark" type="submit" onClick={() => navigate('/cart')}>
               <i className="bi-cart-fill me-1"></i>
               Cart
               <span className="badge bg-dark text-white ms-1 rounded-pill">{cartItemCount}</span>
             </button>
-            {isLoggedIn ? (
-              <>
-                <button className="btn btn-outline-dark mx-2" onClick={handleProfileClick}>
-                  Profile
-                </button>
-                <button className="btn btn-outline-dark" onClick={handleLogout}>
-                  Logout
-                </button>
-              </>
-            ) : (
-              <button className="btn btn-outline-dark mx-2" onClick={handleLoginClick}>
-                <i className="bi bi-person-fill me-1"></i>
-                Login
+          )}
+          {isLoggedIn ? (
+            <>
+              <button className="btn btn-outline-dark mx-2" onClick={handleProfileClick}>
+                Profile
               </button>
-            )}
+              <button className="btn btn-outline-dark" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <button className="btn btn-outline-dark mx-2" onClick={handleLoginClick}>
+              <i className="bi bi-person-fill me-1"></i>
+              Login
+            </button>
+          )}
         </div>
       </div>
     </nav>
