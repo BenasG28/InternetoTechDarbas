@@ -47,12 +47,11 @@ const ItemSection = () => {
             {/* <div className="small mb-1">SKU: {product.id}</div> */}
             <h1 className="display-5 fw-bolder">{product.name}</h1>
             <div className="fs-5 mb-5">
-              {product.onsale && <span className="text-decoration-line-through">{product.price}</span>}
-              <span>{product.price}</span>
+              <span>€{product.price}</span>
             </div>
             <p className="lead">{product.description}</p>
             <div className="d-flex">
-              <input className="form-control text-center me-3" id="inputQuantity" type="number" defaultValue="1" style={{ maxWidth: "3rem" }} />
+              <input className="form-control text-center me-3" id="inputQuantity" type="number" defaultValue="1" min="1" style={{ maxWidth: "4rem" }} />
               <button className="btn btn-outline-dark flex-shrink-0" type="button">
                 <i className="bi-cart-fill me-1"></i>
                 Add to cart
