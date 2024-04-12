@@ -214,7 +214,7 @@ app.get("/profile", (req, res) => {
       res.status(200).json(user);
   });
 });
-app.post("/update-profile", (req, res) => {
+app.post("/update-profile", authenticate, (req, res) => {
   const { username, cardNumber: newCardNumber } = req.body; // Ensure that 'newCardNumber' matches the key in the request body
 
   // Call the database function to update the user information
