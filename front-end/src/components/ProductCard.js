@@ -2,7 +2,14 @@
 import React from 'react';
 import { BsStarFill } from 'react-icons/bs'; // Import Bootstrap icons
 
-const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClick }) => {
+
+
+const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClick, onAddToCart }) => {
+  const handleAddToCartClick = (event) =>{
+    event.stopPropagation(); // Prevent the click event from propagating to the parent div
+    onAddToCart(); // Call the onAddToCart function passed as prop
+  };
+
   return (
     <div onClick={onClick}>
     <div className="card h-100">
@@ -11,7 +18,7 @@ const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClic
       <div className="card-body p-4">
         <div className="text-center">
           <h5 className="fw-bolder">{productName}</h5>
-          {price}
+          €{price}
           {/* Render star reviews if available */}
           {starReviews && (
             <div className="d-flex justify-content-center small text-warning mb-2">
@@ -21,7 +28,7 @@ const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClic
         </div>
       </div>
       <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-        <div className="text-center"><a className="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+        <div className="text-center"><a className="btn btn-outline-dark mt-auto" onClick={handleAddToCartClick}>Add to cart</a></div>
       </div>
     </div>
     </div>

@@ -11,6 +11,20 @@ const db = new sqlite3.Database('gklDatabase.db', (err) => {
         console.log('Connected to the SQLite database.');
     }
 });
+db.run(`CREATE TABLE IF NOT EXISTS carts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER,
+    productId INTEGER,
+    quantity INTEGER,
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (productId) REFERENCES products(id)
+)`, (err) => {
+    if (err) {
+        console.error('Error creating carts table:', err.message);
+    } else {
+        console.log('Carts table already exists or was created successfully.');
+    }
+});
 
 // Create products table
 db.run(`CREATE TABLE IF NOT EXISTS products (
@@ -18,7 +32,9 @@ db.run(`CREATE TABLE IF NOT EXISTS products (
     name TEXT,
     price REAL,
     description TEXT,
-    image TEXT
+    image TEXT,
+    stars TEXT,
+    onsale BOOLEAN
 )`, (err) => {
     if (err) {
         console.error('Error creating products table:', err.message);
@@ -170,6 +186,51 @@ module.exports.updateUserInfo = (username, newCardNumber, callback) => {
         } else {
             callback(null);
         }
+    });
+};
+module.exports.addToCart = (userId, productId, quantity, callback) => {
+    const sql = `INSERT INTO carts (userId, productId, quantity) VALUES (?, ?, ?)`;
+    db.run(sql, [userId, productId, quantity], function (err) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, this.lastID); // Return the ID of the newly inserted cart item
+        }
+    });
+};
+
+module.exports.getCartItems = (userId, callback) => {
+    const sql = `SELECT p.*, c.quantity FROM carts c JOIN products p ON c.productId = p.id WHERE c.userId = ?`;
+    db.all(sql, [userId], (err, rows) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, rows);
+        }
+    });
+};
+
+module.exports.removeFromCart = (userId, productId, callback) => {
+    const sql = `DELETE FROM carts WHERE userId = ? AND productId = ?`;
+    db.run(sql, [userId, productId], function (err) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, this.changes); // Return the number of rows affected by the deletion
+        }
+    });
+};
+
+// Function to get the count of items in the user's cart
+module.exports.getCartItemCount = (userId, callback) => {
+    const sql = `SELECT COUNT(*) AS count FROM carts WHERE userId = ?`;
+    db.get(sql, [userId], (err, row) => {
+        if (err) {
+            callback(err);
+            return;
+        }
+        const count = row ? row.count : 0; // If there are no rows (no items in cart), set count to 0
+        callback(null, count);
     });
 };
 

@@ -1,8 +1,31 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 function Navigation({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  useEffect(() => {
+    fetchCartItemCount();
+  }, []); // Fetch cart item count when component mounts
+
+  const fetchCartItemCount = () => {
+    fetch('/api/cart/items/count')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch cart item count');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setCartItemCount(data.count);
+      })
+      .catch(error => {
+        console.error('Error fetching cart item count:', error);
+      });
+  };
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -48,7 +71,7 @@ function Navigation({ isLoggedIn, onLogout }) {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container px-4 px-lg-5">
-        <a className="navbar-brand" href="#!">GKL Shop</a>
+        <a className="navbar-brand" href="#!" onClick={handleHomeClick}>GKL Shop</a>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -68,7 +91,7 @@ function Navigation({ isLoggedIn, onLogout }) {
             <button className="btn btn-outline-dark" type="submit">
               <i className="bi-cart-fill me-1"></i>
               Cart
-              <span className="badge bg-dark text-white ms-1 rounded-pill">0</span>
+              <span className="badge bg-dark text-white ms-1 rounded-pill">{cartItemCount}</span>
             </button>
             {isLoggedIn ? (
               <>

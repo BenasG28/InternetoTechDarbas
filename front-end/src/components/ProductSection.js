@@ -9,6 +9,7 @@ const ProductSection = () => {
   const queryParams = queryString.parse(location.search);
   const [products, setProducts] = useState([]);
   const [sortMethod, setSortMethod] = useState(queryParams.sort || 'none'); // Default sort method from URL query params
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     fetchProducts();
@@ -30,6 +31,27 @@ const ProductSection = () => {
       });
   };
 
+  const handleAddToCart = (productId) =>{
+    fetch('/api/cart/add',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        productId: productId,
+        quantity: 1,
+      }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to add product to cart');
+        }
+      })
+      .catch(error => {
+        console.error('Error adding product to cart:', error);
+      });
+      
+  };
   const handleSortChange = (event) => {
     const newSortMethod = event.target.value;
     setSortMethod(newSortMethod); // Update selected sort method
@@ -46,9 +68,12 @@ const ProductSection = () => {
           <label htmlFor="sortMethod" className="form-label me-2">Sort by:</label>
           <select className="form-select" id="sortMethod" value={sortMethod} onChange={handleSortChange}>
             <option value="none">None</option>
-            <option value="stars">Stars</option>
-            <option value="price">Price</option>
-            <option value="name">Name</option>
+            <option value="starsLowToHigh">Rating: Low to High</option>
+            <option value="starsHighToLow">Rating: High to Low</option>
+            <option value="priceLowToHigh">Price: Low to High</option>
+            <option value="priceHighToLow">Price: High to Low</option>
+            <option value="nameAToZ">Name: A-Z</option>
+            <option value="nameZToA">Name: Z-A</option>
             {/* Add more sorting options if needed */}
           </select>
         </div>
@@ -62,6 +87,7 @@ const ProductSection = () => {
                 price={product.price}
                 onSale={product.onsale}
                 starReviews={product.stars}
+                onAddToCart={() => handleAddToCart(product.id)} // Pass handleAddToCart function as a prop
               />
             </div>
           ))}

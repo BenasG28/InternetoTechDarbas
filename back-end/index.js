@@ -39,11 +39,29 @@ const registrationValidationSchema = yup.object().shape({
             return res.status(500).send('Error retrieving products'); // Handle error
         }
 
-        if (sort === 'price') {
-            products.sort((a, b) => a.price - b.price);
-        } else if (sort === 'name') {
-            products.sort((a, b) => a.name.localeCompare(b.name));
-        } 
+        switch (sort) {
+          case 'starsLowToHigh':
+              products.sort((a, b) => a.stars - b.stars);
+              break;
+          case 'starsHighToLow':
+              products.sort((a, b) => b.stars - a.stars);
+              break;
+          case 'priceLowToHigh':
+              products.sort((a, b) => a.price - b.price);
+              break;
+          case 'priceHighToLow':
+              products.sort((a, b) => b.price - a.price);
+              break;
+          case 'nameAToZ':
+              products.sort((a, b) => a.name.localeCompare(b.name));
+              break;
+          case 'nameZToA':
+              products.sort((a, b) => b.name.localeCompare(a.name));
+              break;
+          default:
+              // If no valid sorting option is provided, return unsorted products
+              break;
+      }
 
         // Add more sorting criteria as needed
 
@@ -210,6 +228,103 @@ app.post("/update-profile", (req, res) => {
     res.status(200).json({ message: 'User information updated successfully' });
   });
 });
+
+// Middleware function to authenticate requests
+function authenticate(req, res, next) {
+  const token = req.cookies.token;
+
+  // Check if token exists
+  if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  // Verify token against the database
+  db.findUserByToken(token, (err, user) => {
+      if (err) {
+          console.error('Error finding user by token:', err);
+          return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      if (!user) {
+          return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      // If user is authenticated, proceed to the next middleware or route handler
+      req.userId = user.id; // Attach user ID to the request object for later use
+      next();
+  });
+}
+
+const addToCartSchema = yup.object().shape({
+  productId: yup.number().required('Product ID is required').positive('Product ID must be a positive number'),
+  quantity: yup.number().required('Quantity is required').positive('Quantity must be a positive number'),
+});
+
+// Protected endpoint to add a product to the user's cart
+app.post("/cart/add", authenticate, (req, res) => {
+  // Access userId from req object (set in the authenticate middleware)
+  const userId = req.userId;
+
+  addToCartSchema.validate(req.body)
+    .then(validData => {
+      const { productId, quantity } = validData;
+
+      db.addToCart(userId, productId, quantity, (err)=>{
+        if(err){
+          console.error('Error adding to cart:', err.message);
+          return res.status(500).json({ error: 'Internal server error.' });
+        }
+        res.status(200).json({ message: 'Product successfully added to cart.'});
+      });
+    })
+    .catch(error => {
+      console.error('Validation failed:', error.errors);
+      res.status(400).json({ error: error.errors });
+    });
+});
+
+// Protected endpoint to retrieve the list of products in the user's cart
+app.get("/cart/items", authenticate, (req, res) => {
+  // Access userId from req object (set in the authenticate middleware)
+  const userId = req.userId;
+
+  db.getCartItems(userId, (err, cartItems) => {
+    if(err){
+      console.error('Error getting cart:', err.message);
+      return res.status(500).json({ error: 'Internal server error.' });
+    }
+    res.status(200).json({ cartItems });
+  });
+});
+
+// Protected endpoint to remove a product from the user's cart
+app.delete("/cart/remove/:productId", authenticate, (req, res) => {
+  // Access userId from req object (set in the authenticate middleware)
+  const userId = req.userId;
+  const productId = req.params.productId;
+
+  db.removeFromCart(userId, productId, (err) => {
+    if (err) {
+      console.error('Error removing product from cart:', err.message);
+      return res.status(500).json({ error: 'Internal server error.' });
+    }
+    res.status(200).json({ message: 'Successfully removed product from cart.' });
+  });
+});
+
+app.get('/cart/items/count', authenticate, (req, res) => {
+  const userId = req.userId; // Assuming the user ID is obtained from authentication middleware
+
+  // Call a function to query the database and get the count of cart items for the user
+  db.getCartItemCount(userId, (err, count) => {
+    if (err) {
+      console.error('Error counting cart items:', err.message);
+      return res.status(500).json({ error: 'Internal server error.' });
+    }
+    res.status(200).json({ count });
+  });
+});
+
 
 
 // Start server
