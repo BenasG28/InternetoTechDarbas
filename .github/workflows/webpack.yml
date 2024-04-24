@@ -21,9 +21,18 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+
+    - name: Debugging List contents of front-end directory
+      run: |
+        ls -la front-end
+
     - name: Change directory to front-end   
       run: |
         cd front-end
+
+    - name: Debugging List contents of front-end directory after changing directory
+      run: |
+        ls -la
 
     - name: Build
       run: |
