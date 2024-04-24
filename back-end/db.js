@@ -17,7 +17,8 @@ db.run(`CREATE TABLE IF NOT EXISTS carts (
     productId INTEGER,
     quantity INTEGER,
     FOREIGN KEY (userId) REFERENCES users(id),
-    FOREIGN KEY (productId) REFERENCES products(id)
+    FOREIGN KEY (productId) REFERENCES products(id),
+    CONSTRAINT uc_cart UNIQUE (userId, productId)
 )`, (err) => {
     if (err) {
         console.error('Error creating carts table:', err.message);
@@ -48,7 +49,8 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
     username TEXT UNIQUE,
     password TEXT,
     cardNumber TEXT,
-    token TEXT
+    token TEXT,
+    tokenExpiration INTEGER
 )`, (err) => {
     if (err) {
         console.error('Error creating users table:', err.message);
@@ -125,14 +127,14 @@ module.exports.deleteProduct = (productId, callback) => {
         }
     });
 };
-module.exports.createUserWithToken = (username, password, cardNumber, token, callback) => {
+module.exports.createUserWithToken = (username, password, cardNumber, token, tokenExpiration, callback) => {
      // Generate a salt and hash for the password
      bcrypt.hash(password, 10, (err, hashedPassword) => {
         if (err) {
             return callback(err);
         }
-        const sql = `INSERT INTO users (username, password, cardNumber, token) VALUES (?, ?, ?, ?)`;
-        db.run(sql, [username, hashedPassword, cardNumber, token], function (err) {
+        const sql = `INSERT INTO users (username, password, cardNumber, token, tokenExpiration) VALUES (?, ?, ?, ?, ?)`;
+        db.run(sql, [username, hashedPassword, cardNumber, token, tokenExpiration], function (err) {
             if (err) {
                 callback(err);
             } else {
@@ -166,9 +168,9 @@ module.exports.findUserByToken = (token, callback) => {
         }
     });
 };
-module.exports.updateUserToken = (userId, newToken, callback) => {
-    const sql = 'UPDATE users SET token = ? WHERE id = ?';
-    db.run(sql, [newToken, userId], (err) => {
+module.exports.updateUserToken = (userId, newToken, tokenExpiration, callback) => {
+    const sql = 'UPDATE users SET token = ?, tokenExpiration = ? WHERE id = ?';
+    db.run(sql, [newToken, tokenExpiration, userId], (err) => {
         if (err) {
             // If an error occurs during the database operation, pass the error to the callback
             callback(err);
@@ -189,18 +191,25 @@ module.exports.updateUserInfo = (username, newCardNumber, callback) => {
     });
 };
 module.exports.addToCart = (userId, productId, quantity, callback) => {
-    const sql = `INSERT INTO carts (userId, productId, quantity) VALUES (?, ?, ?)`;
-    db.run(sql, [userId, productId, quantity], function (err) {
+    const sql = `
+        INSERT OR REPLACE INTO carts (userId, productId, quantity)
+        VALUES (?, ?, COALESCE((SELECT quantity FROM carts WHERE userId = ? AND productId = ?), 0) + ?)`;
+    db.run(sql, [userId, productId, userId, productId, quantity], function (err) {
         if (err) {
             callback(err);
         } else {
-            callback(null, this.lastID); // Return the ID of the newly inserted cart item
+            callback(null, this.changes); // Return the number of rows affected
         }
     });
 };
 
+
+
 module.exports.getCartItems = (userId, callback) => {
-    const sql = `SELECT p.*, c.quantity FROM carts c JOIN products p ON c.productId = p.id WHERE c.userId = ?`;
+    const sql = `SELECT p.*, c.quantity as totalQuantity
+    FROM carts c
+    JOIN products p ON c.productId = p.id
+    WHERE c.userId = ?`;
     db.all(sql, [userId], (err, rows) => {
         if (err) {
             callback(err);
@@ -211,15 +220,26 @@ module.exports.getCartItems = (userId, callback) => {
 };
 
 module.exports.removeFromCart = (userId, productId, callback) => {
-    const sql = `DELETE FROM carts WHERE userId = ? AND productId = ?`;
-    db.run(sql, [userId, productId], function (err) {
+    // Decrement the quantity by one
+    const updateSql = `UPDATE carts SET quantity = quantity - 1 WHERE userId = ? AND productId = ?`;
+    db.run(updateSql, [userId, productId], function (err) {
         if (err) {
             callback(err);
         } else {
-            callback(null, this.changes); // Return the number of rows affected by the deletion
+            // Check if the quantity has become zero after decrementing
+            const deleteSql = `DELETE FROM carts WHERE userId = ? AND productId = ? AND quantity = 0`;
+            db.run(deleteSql, [userId, productId], function (err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, this.changes); // Return the number of rows affected by the deletion
+                }
+            });
         }
     });
 };
+
+
 
 // Function to get the count of items in the user's cart
 module.exports.getCartItemCount = (userId, callback) => {
@@ -233,6 +253,17 @@ module.exports.getCartItemCount = (userId, callback) => {
         callback(null, count);
     });
 };
+
+module.exports.invalidateUserToken = (userId, callback) => {
+    const sql = 'UPDATE users SET token = NULL WHERE id = ?';
+    db.run(sql, [userId], (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null);
+        }
+    });
+}
 
 
 
