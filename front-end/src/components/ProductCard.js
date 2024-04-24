@@ -1,4 +1,3 @@
-// ProductCard.js
 import React from 'react';
 import { BsStarFill } from 'react-icons/bs'; // Import Bootstrap icons
 
@@ -6,8 +5,8 @@ import { BsStarFill } from 'react-icons/bs'; // Import Bootstrap icons
 
 const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClick, onAddToCart }) => {
   const handleAddToCartClick = (event) =>{
-    event.stopPropagation(); // Prevent the click event from propagating to the parent div
-    onAddToCart(); // Call the onAddToCart function passed as prop
+    event.stopPropagation(); 
+    onAddToCart();
   };
 
   return (
@@ -19,7 +18,6 @@ const ProductCard = ({ imageSrc, productName, price, onSale, starReviews, onClic
         <div className="text-center">
           <h5 className="fw-bolder">{productName}</h5>
           €{price}
-          {/* Render star reviews if available */}
           {starReviews && (
             <div className="d-flex justify-content-center small text-warning mb-2">
            {[...Array(parseInt(starReviews))].map((_, index) => (<BsStarFill key={index} />))}

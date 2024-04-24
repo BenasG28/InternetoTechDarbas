@@ -1,30 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import CartContext from './CartContext';
 
 function Navigation({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
-  const [cartItemCount, setCartItemCount] = useState(0);
-
-  useEffect(() => {
-    fetchCartItemCount();
-  }, []); // Fetch cart item count when component mounts
-
-  const fetchCartItemCount = () => {
-    fetch('/api/cart/items/count')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch cart item count');
-        }
-        return response.json();
-      })
-      .then(data => {
-        setCartItemCount(data.count);
-      })
-      .catch(error => {
-        console.error('Error fetching cart item count:', error);
-      });
-  };
+  const { getTotalQuantity } = useContext(CartContext);
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -37,35 +18,34 @@ function Navigation({ isLoggedIn, onLogout }) {
   const handleAboutClick = () => {
     navigate('/about');
   };
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
   const handleLogout = () => {
     fetch('/api/logout', {
       method: 'POST',
     })
     .then(response => {
       if (!response.ok) {
-        // Logout failed, handle error
         return response.json().then(data => {
           console.error('Logout failed:', data.message);
-          // You can show an error message to the user here
         });
       }
   
-      // Logout successful
       console.log('Logout Successful');
-      onLogout(); // Update the isLoggedIn state in App.js
+      onLogout(); 
       navigate('/home');
     })
     .catch(error => {
       console.error('Error logging out:', error.message);
-      // Handle network or other errors here
     });
   };
 
   const handleProfileClick = () => {
-    // Navigate to the profile page
-    // navigate('/profile');
     navigate('/profile');
   };
+
+ 
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -88,10 +68,10 @@ function Navigation({ isLoggedIn, onLogout }) {
             </li>
           </ul>
           {isLoggedIn && (
-            <button className="btn btn-outline-dark" type="submit" onClick={() => navigate('/cart')}>
+            <button className="btn btn-outline-dark" type="submit" onClick={handleCartClick}>
               <i className="bi-cart-fill me-1"></i>
               Cart
-              <span className="badge bg-dark text-white ms-1 rounded-pill">{cartItemCount}</span>
+              <span className="badge bg-dark text-white ms-1 rounded-pill">{getTotalQuantity()}</span>
             </button>
           )}
           {isLoggedIn ? (

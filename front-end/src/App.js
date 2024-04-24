@@ -9,11 +9,47 @@ import Navigation from './components/Navigation';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProfilePage from './pages/ProfilePage';
+import CartPage from './pages/CartPage';
+import { CartProvider } from './components/CartContext';
+import { useEffect } from 'react';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if(isLoggedIn){
+      validateToken();
+    }
+    
+  }, [isLoggedIn]);
+
+  const validateToken = () => {
+    if(!isLoggedIn){
+      return;
+    }
+
+    try {
+      fetch('api/validate-token')
+        .then(response => {
+          if (response.ok) {
+            handleLogin();
+          } else {
+            handleLogout();
+          }
+        })
+        .catch(error => {
+          console.error('Error validating token:', error);
+          handleLogout();
+        });
+    } catch (error) {
+      console.error('Error validating token:', error);
+      handleLogout();
+    }
+  };
+
   const handleLogin = () => {
     setIsLoggedIn(true);
+    validateToken();
   };
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -22,6 +58,7 @@ function App() {
   return (
     <React.StrictMode>
       <BrowserRouter>
+        <CartProvider>
         <Navigation isLoggedIn={isLoggedIn} onLogout={handleLogout} />
         <Header />
         <Routes>
@@ -32,8 +69,10 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage/>}/>
+          <Route path="/cart" element={<CartPage/>}/>
         </Routes>
         <Footer />
+        </CartProvider>
       </BrowserRouter>
     </React.StrictMode>
   );

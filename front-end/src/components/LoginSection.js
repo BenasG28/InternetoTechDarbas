@@ -17,21 +17,17 @@ function LoginSection({onLogin}) {
     })
     .then(response => {
       if (!response.ok) {
-        // Login failed, handle error
         return response.json().then(data => {
           console.error('Login failed:', data.message);
-          // You can show an error message to the user here
         });
       }
   
-      // Login successful
       console.log('Login Successful');
       onLogin();
       navigate('/home');
     })
     .catch(error => {
       console.error('Error logging in:', error.message);
-      // Handle network or other errors here
     });
   };
   

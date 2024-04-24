@@ -1,14 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import ItemSection from '../components/ItemSection';
+import CartSection from '../components/CartSection';
 
-const ItemPage = () => {
+const CartPage = () => {
   const navigate = useNavigate();
   return (
    <div>
-    <ItemSection/>
+    <CartSection/>
    </div>
   );
 };
 
-export default ItemPage;
+export default CartPage;

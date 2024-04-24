@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import ProductCard from './ProductCard';
+import CartContext from './CartContext';
 
 const ProductSection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = queryString.parse(location.search);
   const [products, setProducts] = useState([]);
-  const [sortMethod, setSortMethod] = useState(queryParams.sort || 'none'); // Default sort method from URL query params
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const [sortMethod, setSortMethod] = useState(queryParams.sort || 'none');
+  const { incrementCartItemCount } = useContext(CartContext);
 
   useEffect(() => {
     fetchProducts();
-  }, [sortMethod]); // Fetch products whenever sortMethod changes
+  }, [sortMethod]);
 
   const fetchProducts = () => {
     fetch(`/api/products?sort=${sortMethod}`)
@@ -30,7 +31,6 @@ const ProductSection = () => {
         console.error('Error fetching products:', error);
       });
   };
-
   const handleAddToCart = (productId) =>{
     fetch('/api/cart/add',{
       method: 'POST',
@@ -46,6 +46,7 @@ const ProductSection = () => {
         if (!response.ok) {
           throw new Error('Failed to add product to cart');
         }
+        incrementCartItemCount();
       })
       .catch(error => {
         console.error('Error adding product to cart:', error);
@@ -74,7 +75,6 @@ const ProductSection = () => {
             <option value="priceHighToLow">Price: High to Low</option>
             <option value="nameAToZ">Name: A-Z</option>
             <option value="nameZToA">Name: Z-A</option>
-            {/* Add more sorting options if needed */}
           </select>
         </div>
         <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -87,7 +87,7 @@ const ProductSection = () => {
                 price={product.price}
                 onSale={product.onsale}
                 starReviews={product.stars}
-                onAddToCart={() => handleAddToCart(product.id)} // Pass handleAddToCart function as a prop
+                onAddToCart={() => handleAddToCart(product.id)}
               />
             </div>
           ))}
