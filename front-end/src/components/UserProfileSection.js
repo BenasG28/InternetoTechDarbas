@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfileSection = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     username: "",
     password: "",
@@ -8,22 +10,28 @@ const UserProfileSection = () => {
   });
 
   useEffect(() => {
-    fetch("/api/profile", {
-      method: "GET",
-    })
-    .then((res) => {
-      console.log("Response status:", res.status);
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Fetched user data:", data);
-      setUserData(data);
-    })
-    .catch((error) => {
-      console.error("Fetch error:", error);
-      // Handle error
-    });
+    fetchUserProfile();
   }, []);
+
+  const fetchUserProfile = () => {
+    fetch('/api/profile', {
+      method: 'GET',
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error('Failed to fetch user profile');
+        }
+      })
+      .then((data) => {
+        setUserData(data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch user profile:', error);
+        navigate('/login');
+      });
+  };
 
   const handleUpdate = () => {
     fetch("/api/update-profile", {

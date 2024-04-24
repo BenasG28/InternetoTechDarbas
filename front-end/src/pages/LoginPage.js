@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import LoginSection from '../components/LoginSection';
-import '../styles.css'
 function LoginPage({onLogin}) {
   const navigate = useNavigate();
   return (
