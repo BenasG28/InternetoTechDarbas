@@ -26,15 +26,8 @@ jobs:
       run: |
         ls -la front-end
 
-    - name: Change directory to front-end   
-      run: |
-        cd front-end
-
-    - name: Debugging List contents of front-end directory after changing directory
-      run: |
-        ls -la
-
     - name: Build
       run: |
+        cd front-end
         npm install
         npx webpack
