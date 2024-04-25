@@ -78,7 +78,7 @@ const UserProfileSection = () => {
                 id="username"
                 name="username"
                 value={userData.username}
-                disabled // Disable editing of username
+                disabled 
               />
             </div>
             <div className="mb-3">

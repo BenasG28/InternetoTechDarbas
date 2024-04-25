@@ -1,9 +1,7 @@
-// Import necessary modules
 const sqlite3 = require('sqlite3').verbose();
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
-// Open a connection to the SQLite database file
 const db = new sqlite3.Database('gklDatabase.db', (err) => {
     if (err) {
         console.error('Error opening database:', err.message);
@@ -27,7 +25,6 @@ db.run(`CREATE TABLE IF NOT EXISTS carts (
     }
 });
 
-// Create products table
 db.run(`CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -59,20 +56,17 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
 });
 
 
-// Function to insert a new product into the products table
 module.exports.createProduct = (name, price, description, image, stars, callback) => {
     const sql = `INSERT INTO products (name, price, description, image) VALUES (?, ?, ?, ?)`;
     db.run(sql, [name, price, description, image, stars], function (err) {
         if (err) {
             callback(err);
         } else {
-            // Return the ID of the newly inserted product
             callback(null, this.lastID);
         }
     });
 };
 
-// Function to get all products from the products table
 module.exports.getAllProducts = (callback) => {
     const sql = `SELECT * FROM products;`;
     db.all(sql, [], (err, rows) => {
@@ -84,8 +78,6 @@ module.exports.getAllProducts = (callback) => {
     });
 };
 
-// Function to get a product by its ID from the products table
-// Function to get a product by its ID from the products table
 module.exports.getProductById = (id, callback) => {
     const sql = `SELECT * FROM products WHERE id = ?`;
     db.get(sql, [id], (err, row) => {
@@ -103,32 +95,28 @@ module.exports.getProductById = (id, callback) => {
     });
 };
 
-
-// Function to update a product in the products table
 module.exports.updateProduct = (productId, name, price, description, image, callback) => {
     const sql = `UPDATE products SET name = ?, price = ?, description = ?, image = ? WHERE id = ?`;
     db.run(sql, [name, price, description, image, productId], function (err) {
         if (err) {
             callback(err);
         } else {
-            callback(null, this.changes); // Return the number of rows affected by the update
+            callback(null, this.changes); 
         }
     });
 };
 
-// Function to delete a product from the products table
 module.exports.deleteProduct = (productId, callback) => {
     const sql = `DELETE FROM products WHERE id = ?`;
     db.run(sql, [productId], function (err) {
         if (err) {
             callback(err);
         } else {
-            callback(null, this.changes); // Return the number of rows affected by the deletion
+            callback(null, this.changes);
         }
     });
 };
 module.exports.createUserWithToken = (username, password, cardNumber, token, tokenExpiration, callback) => {
-     // Generate a salt and hash for the password
      bcrypt.hash(password, 10, (err, hashedPassword) => {
         if (err) {
             return callback(err);
@@ -138,7 +126,6 @@ module.exports.createUserWithToken = (username, password, cardNumber, token, tok
             if (err) {
                 callback(err);
             } else {
-                // Return the ID of the newly inserted user along with the token
                 callback(null, { id: this.lastID, token });
             }
         });
@@ -150,8 +137,6 @@ module.exports.createUserWithToken = (username, password, cardNumber, token, tok
         if (err) {
             callback(err);
         } else {
-            // If a user with the given username exists, return the user data
-            // Otherwise, return null to indicate that the user does not exist
             callback(null, row);
         }
     });
@@ -162,8 +147,6 @@ module.exports.findUserByToken = (token, callback) => {
         if (err) {
             callback(err);
         } else {
-            // If a user with the given token exists, return the user data
-            // Otherwise, return null to indicate that the user does not exist
             callback(null, row);
         }
     });
@@ -172,10 +155,8 @@ module.exports.updateUserToken = (userId, newToken, tokenExpiration, callback) =
     const sql = 'UPDATE users SET token = ?, tokenExpiration = ? WHERE id = ?';
     db.run(sql, [newToken, tokenExpiration, userId], (err) => {
         if (err) {
-            // If an error occurs during the database operation, pass the error to the callback
             callback(err);
         } else {
-            // If the update is successful, call the callback without any error
             callback(null);
         }
     });
@@ -198,7 +179,7 @@ module.exports.addToCart = (userId, productId, quantity, callback) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, this.changes); // Return the number of rows affected
+            callback(null, this.changes);
         }
     });
 };
@@ -220,13 +201,11 @@ module.exports.getCartItems = (userId, callback) => {
 };
 
 module.exports.removeFromCart = (userId, productId, callback) => {
-    // Decrement the quantity by one
     const updateSql = `UPDATE carts SET quantity = quantity - 1 WHERE userId = ? AND productId = ?`;
     db.run(updateSql, [userId, productId], function (err) {
         if (err) {
             callback(err);
         } else {
-            // Check if the quantity has become zero after decrementing
             const deleteSql = `DELETE FROM carts WHERE userId = ? AND productId = ? AND quantity = 0`;
             db.run(deleteSql, [userId, productId], function (err) {
                 if (err) {
@@ -241,7 +220,6 @@ module.exports.removeFromCart = (userId, productId, callback) => {
 
 
 
-// Function to get the count of items in the user's cart
 module.exports.getCartItemCount = (userId, callback) => {
     const sql = `SELECT COUNT(*) AS count FROM carts WHERE userId = ?`;
     db.get(sql, [userId], (err, row) => {
@@ -249,7 +227,7 @@ module.exports.getCartItemCount = (userId, callback) => {
             callback(err);
             return;
         }
-        const count = row ? row.count : 0; // If there are no rows (no items in cart), set count to 0
+        const count = row ? row.count : 0;
         callback(null, count);
     });
 };
@@ -265,9 +243,6 @@ module.exports.invalidateUserToken = (userId, callback) => {
     });
 }
 
-
-
-// Close the database connection
 module.exports.closeDatabase = () => {
     db.close((err) => {
         if (err) {

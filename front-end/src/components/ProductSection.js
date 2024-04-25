@@ -55,9 +55,7 @@ const ProductSection = () => {
   };
   const handleSortChange = (event) => {
     const newSortMethod = event.target.value;
-    setSortMethod(newSortMethod); // Update selected sort method
-
-    // Update URL with new sort method
+    setSortMethod(newSortMethod); 
     const queryParams = queryString.stringify({ ...queryString.parse(location.search), sort: newSortMethod });
     navigate(`${location.pathname}?${queryParams}`);
   };

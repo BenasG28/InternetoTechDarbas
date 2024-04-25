@@ -5,14 +5,13 @@ import { useNavigate } from 'react-router-dom';
 
 const CartSection = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [showOrderForm, setShowOrderForm] = useState(false); // State to control the display of the order form
-  const [showConfirmation, setShowConfirmation] = useState(false); // State to control the display of the confirmation message
-  const [showNeedItQuestion, setShowNeedItQuestion] = useState(false); // State to control the display of the "Do you really need it?" question
+  const [showOrderForm, setShowOrderForm] = useState(false); 
+  const [showConfirmation, setShowConfirmation] = useState(false); 
+  const [showNeedItQuestion, setShowNeedItQuestion] = useState(false); 
   const [orderInfo, setOrderInfo] = useState({
     name: '',
     address: '',
     email: '',
-    // Add more fields as needed
   });
   const { incrementCartItemCount } = useContext(CartContext);
   const navigate = useNavigate();
@@ -22,33 +21,29 @@ const CartSection = () => {
   }, []);
 
   const handleMakeOrder = () => {
-    setShowOrderForm(true); // Show the order form when "Place Order" is clicked
+    setShowOrderForm(true);
   };
 
   const handleCloseOrderForm = () => {
-    setShowOrderForm(false); // Close the order form when closed
+    setShowOrderForm(false); 
   };
 
   const handleNextStep = () => {
-    setShowOrderForm(false); // Close the order form
-    setShowNeedItQuestion(true); // Show the "Do you really need it?" question when "Next" is clicked
+    setShowOrderForm(false); 
+    setShowNeedItQuestion(true); 
   };
 
   const handleConfirmOrder = () => {
-    setShowNeedItQuestion(false); // Close the "Do you really need it?" question popup
-    setShowConfirmation(true); // Show the confirmation message
-    // Here you can handle the order confirmation logic
-    // For example, send the order to the backend
+    setShowNeedItQuestion(false);
+    setShowConfirmation(true); 
   };
 
   const handleRejectOrder = () => {
-    setShowNeedItQuestion(false); // Close the "Do you really need it?" question popup
-    // You can handle rejection logic here if needed
+    setShowNeedItQuestion(false);
   };
 
   const handleSubmitOrder = (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    // Send a request to the backend to make the order
+    e.preventDefault(); 
     fetch('/api/orders', {
       method: 'POST',
       headers: {
@@ -107,7 +102,6 @@ const CartSection = () => {
         if (!response.ok) {
           throw new Error('Failed to remove product from cart');
         }
-        // Refresh cart items after removal
         fetchCartItems();
         incrementCartItemCount();
       })
@@ -133,7 +127,6 @@ const CartSection = () => {
             </div>
           ))}
         </div>
-        {/* Modal for Order Form */}
         {showOrderForm && (
           <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', zIndex: 9999, top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="modal-dialog modal-dialog-centered">
@@ -156,7 +149,6 @@ const CartSection = () => {
                       <label htmlFor="email" className="form-label">Email</label>
                       <input type="email" id="email" name="email" value={orderInfo.email} onChange={handleInputChange} className="form-control" placeholder="Email" required />
                     </div>
-                    {/* Add more fields for order information */}
                     <button type="submit" className="btn btn-primary">Next</button>
                   </form>
                 </div>
@@ -164,11 +156,10 @@ const CartSection = () => {
             </div>
           </div>
         )}
-        {/* Modal for "Do you really need it?" question */}
         {showNeedItQuestion && (
   <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', zIndex: 9999, top: 0, left: 0, right: 0, bottom: 0 }}>
     <div className="modal-dialog modal-dialog-centered">
-      <div className="modal-content" style={{ textAlign: 'center' }}> {/* Center the content */}
+      <div className="modal-content" style={{ textAlign: 'center' }}> 
         <div className="modal-header">
           <h5 className="modal-title">Do you really need it?</h5>
           <button type="button" className="btn-close" onClick={() => setShowNeedItQuestion(false)}></button>
@@ -182,7 +173,6 @@ const CartSection = () => {
     </div>
   </div>
 )}
-        {/* Confirmation message */}
         {showConfirmation && (
           <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', zIndex: 9999, top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="modal-dialog modal-dialog-centered">
@@ -198,7 +188,6 @@ const CartSection = () => {
             </div>
           </div>
         )}
-        {/* Button to show the order form */}
         {!showOrderForm && !showConfirmation && !showNeedItQuestion && (
           <button className="btn btn-primary mt-4" onClick={handleMakeOrder}>Place Order</button>
         )}

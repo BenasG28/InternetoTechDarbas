@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import CartContext from './CartContext';
 
 function LoginSection({onLogin}) {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const {incrementCartItemCount} = useContext(CartContext)
 
   const handleLogin = () => {
     fetch('/api/login', {
@@ -24,6 +26,7 @@ function LoginSection({onLogin}) {
   
       console.log('Login Successful');
       onLogin();
+      incrementCartItemCount();
       navigate('/home');
     })
     .catch(error => {

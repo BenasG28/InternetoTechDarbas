@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ItemPage from './pages/ItemPage';
 import HomePage from './pages/HomePage';
@@ -23,7 +23,7 @@ function App() {
     
   }, [isLoggedIn]);
 
-  const validateToken = () => {
+  const validateToken = useCallback(() => {
     if(!isLoggedIn){
       return;
     }
@@ -45,11 +45,10 @@ function App() {
       console.error('Error validating token:', error);
       handleLogout();
     }
-  };
+  }, [isLoggedIn]);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
-    validateToken();
   };
   const handleLogout = () => {
     setIsLoggedIn(false);
