@@ -8,7 +8,6 @@ const ItemSection = () => {
   const [quantity, setQuantity] = useState(1);
   const {incrementCartItemCount} = useContext(CartContext);
 
-  // Define the fetchProduct function to fetch a single product by id
   const fetchProduct = (productId) => {
     fetch(`/api/products/${productId}`)
       .then(response => {
@@ -48,13 +47,9 @@ const ItemSection = () => {
   };
 
   useEffect(() => {
-    // Call fetchProduct with the id parameter
     fetchProduct(id);
   }, [id]);
 
-
-
-  // Check if product data is still loading
   if (!product) {
     return <div>The item you're trying to find don't exist</div>;
   }
