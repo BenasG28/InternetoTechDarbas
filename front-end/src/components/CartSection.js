@@ -174,7 +174,7 @@ const CartSection = () => {
           <button type="button" className="btn-close" onClick={() => setShowNeedItQuestion(false)}></button>
         </div>
         <div className="modal-body">
-          <p>Do you? Do you really really really really need it?</p>
+          <p>Do you?? Do you really really really really need it?</p>
           <button className="btn btn-primary me-3" onClick={handleConfirmOrder}>Yes</button>
           <button className="btn btn-danger" onClick={handleRejectOrder}>No</button>
         </div>
