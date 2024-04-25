@@ -30,7 +30,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: '/public/index.html',
       //filename: 'index.html',
     }),
   ],
@@ -53,7 +53,7 @@ module.exports = {
         context: "/api",
         target: "http://localhost:3000",
         pathRewrite: { "^/api": "" },
-        secure: false,
+        secure: true,
         changeOrigin: true,
       },
     ],
